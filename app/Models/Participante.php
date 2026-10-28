@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['nombre', 'cedula', 'direccion', 'celular'])]
+#[Fillable(['nombre', 'cedula', 'direccion', 'celular', 'opcion'])]
 class Participante extends Model
 {
     /** @use HasFactory<ParticipanteFactory> */

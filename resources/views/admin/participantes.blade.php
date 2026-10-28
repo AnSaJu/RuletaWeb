@@ -47,7 +47,7 @@
         </div>
 
         <div class="mt-8 overflow-x-auto rounded-2xl border border-white/10 bg-white/5">
-            <table class="w-full min-w-[40rem] text-left text-sm">
+            <table class="w-full min-w-[48rem] text-left text-sm">
                 <thead class="border-b border-white/10 text-xs uppercase tracking-wide text-slate-400">
                     <tr>
                         <th scope="col" class="px-5 py-3">#</th>
@@ -55,6 +55,7 @@
                         <th scope="col" class="px-5 py-3">Cédula</th>
                         <th scope="col" class="px-5 py-3">Dirección</th>
                         <th scope="col" class="px-5 py-3">Celular</th>
+                        <th scope="col" class="px-5 py-3">Opción</th>
                         <th scope="col" class="px-5 py-3">Registrado</th>
                     </tr>
                 </thead>
@@ -66,13 +67,20 @@
                             <td class="px-5 py-3 tabular-nums">{{ $participante->cedula }}</td>
                             <td class="px-5 py-3 text-slate-300">{{ $participante->direccion }}</td>
                             <td class="px-5 py-3 tabular-nums">{{ $participante->celular }}</td>
+                            <td class="px-5 py-3 whitespace-nowrap">
+                                @if ($participante->opcion)
+                                    <span class="rounded-full bg-fuchsia-500/15 px-3 py-1 text-fuchsia-300">{{ $participante->opcion }}</span>
+                                @else
+                                    <span class="text-slate-500">—</span>
+                                @endif
+                            </td>
                             <td class="px-5 py-3 whitespace-nowrap text-slate-400">
                                 {{ $participante->created_at->timezone('America/Bogota')->format('d/m/Y H:i') }}
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-5 py-12 text-center text-slate-400">
+                            <td colspan="7"class="px-5 py-12 text-center text-slate-400">
                                 {{ $busqueda !== '' ? 'No se encontraron resultados para tu búsqueda.' : 'Aún no hay personas registradas.' }}
                             </td>
                         </tr>

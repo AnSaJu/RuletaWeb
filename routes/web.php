@@ -3,11 +3,15 @@
 use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\ParticipanteController as AdminParticipanteController;
 use App\Http\Controllers\ParticipanteController;
+use App\Http\Controllers\RuletaController;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'landing')->name('home');
 Route::post('/registro', [ParticipanteController::class, 'store'])->name('participantes.store');
+
+Route::get('/ruleta', [RuletaController::class, 'show'])->name('ruleta.show');
+Route::post('/ruleta', [RuletaController::class, 'store'])->name('ruleta.store');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('guest')->group(function () {

@@ -3,20 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreParticipanteRequest;
-use App\Models\Participante;
 use Illuminate\Http\RedirectResponse;
 
 class ParticipanteController extends Controller
 {
     /**
-     * Store a newly registered participant.
+     * Keep the validated data until the participant picks an option on the
+     * roulette; the record is created once the wheel stops.
      */
     public function store(StoreParticipanteRequest $request): RedirectResponse
     {
-        Participante::create($request->validated());
+        $request->session()->put('participante_pendiente', $request->validated());
 
-        return redirect()
-            ->route('home')
-            ->with('registrado', '¡Registro exitoso! Tus datos fueron guardados correctamente.');
+        return redirect()->route('ruleta.show');
     }
 }

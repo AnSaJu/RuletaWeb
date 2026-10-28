@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\Rol;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -27,7 +28,20 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'is_admin' => 'boolean',
+            'rol' => Rol::class,
         ];
+    }
+
+    /**
+     * Whether the user can enter the administration panel at all.
+     */
+    public function tieneAccesoAlPanel(): bool
+    {
+        return $this->rol !== null;
+    }
+
+    public function esSuperAdmin(): bool
+    {
+        return $this->rol === Rol::SuperAdmin;
     }
 }

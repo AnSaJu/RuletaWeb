@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\Rol;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -34,12 +35,22 @@ class UserFactory extends Factory
     }
 
     /**
-     * Indicate that the user is a panel administrator.
+     * Indicate that the user is a super administrator of the panel.
      */
-    public function admin(): static
+    public function superAdmin(): static
     {
         return $this->state(fn (array $attributes) => [
-            'is_admin' => true,
+            'rol' => Rol::SuperAdmin,
+        ]);
+    }
+
+    /**
+     * Indicate that the user is a panel administrator who can only see participants.
+     */
+    public function administrador(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'rol' => Rol::Administrador,
         ]);
     }
 

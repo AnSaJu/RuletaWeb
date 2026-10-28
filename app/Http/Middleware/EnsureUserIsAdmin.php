@@ -9,13 +9,13 @@ use Symfony\Component\HttpFoundation\Response;
 class EnsureUserIsAdmin
 {
     /**
-     * Handle an incoming request.
+     * Only users with a panel role (super administrador or administrador) may pass.
      *
      * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        abort_unless($request->user()?->is_admin, 403);
+        abort_unless($request->user()?->tieneAccesoAlPanel(), 403);
 
         return $next($request);
     }

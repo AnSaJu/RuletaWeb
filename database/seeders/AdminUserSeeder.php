@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Rol;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -25,7 +26,7 @@ class AdminUserSeeder extends Seeder
         $admin->forceFill([
             'name' => config('admin.name'),
             'password' => $password,
-            'is_admin' => true,
+            'rol' => Rol::SuperAdmin,
             'email_verified_at' => now(),
         ])->save();
     }

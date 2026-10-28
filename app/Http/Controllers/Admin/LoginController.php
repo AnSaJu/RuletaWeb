@@ -33,7 +33,9 @@ class LoginController extends Controller
             'password.required' => 'Ingresa tu contraseña.',
         ]);
 
-        if (! Auth::attempt([...$credentials, 'is_admin' => true], $request->boolean('remember'))) {
+        $credentials['rol'] = fn ($query) => $query->whereNotNull('rol');
+
+        if (! Auth::attempt($credentials, $request->boolean('remember'))) {
             throw ValidationException::withMessages([
                 'email' => 'Las credenciales no son correctas.',
             ]);

@@ -35,7 +35,7 @@ class RuletaConfigTest extends TestCase
 
     private function admin(): User
     {
-        return User::factory()->admin()->create();
+        return User::factory()->superAdmin()->create();
     }
 
     public function test_the_defaults_are_three_equal_options_at_two_seconds_per_turn(): void

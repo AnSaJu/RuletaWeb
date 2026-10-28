@@ -26,7 +26,7 @@ class AdminPanelTest extends TestCase
 
     public function test_admin_can_log_in(): void
     {
-        $admin = User::factory()->admin()->create();
+        $admin = User::factory()->superAdmin()->create();
 
         $this->post(route('admin.login'), ['email' => $admin->email, 'password' => 'password'])
             ->assertRedirect(route('admin.participantes.index'));
@@ -46,7 +46,7 @@ class AdminPanelTest extends TestCase
 
     public function test_wrong_password_is_rejected(): void
     {
-        $admin = User::factory()->admin()->create();
+        $admin = User::factory()->superAdmin()->create();
 
         $this->post(route('admin.login'), ['email' => $admin->email, 'password' => 'incorrecta'])
             ->assertSessionHasErrors('email');
@@ -59,7 +59,7 @@ class AdminPanelTest extends TestCase
         Participante::factory()->create(['nombre' => 'Ana Torres', 'cedula' => '1020304050']);
         Participante::factory()->create(['nombre' => 'Luis Mora', 'cedula' => '9988776655']);
 
-        $this->actingAs(User::factory()->admin()->create())
+        $this->actingAs(User::factory()->superAdmin()->create())
             ->get(route('admin.participantes.index'))
             ->assertOk()
             ->assertSeeText('Ana Torres')
@@ -71,7 +71,7 @@ class AdminPanelTest extends TestCase
         Participante::factory()->create(['nombre' => 'Ana Torres', 'cedula' => '1020304050']);
         Participante::factory()->create(['nombre' => 'Luis Mora', 'cedula' => '9988776655']);
 
-        $this->actingAs(User::factory()->admin()->create())
+        $this->actingAs(User::factory()->superAdmin()->create())
             ->get(route('admin.participantes.index', ['q' => '9988']))
             ->assertOk()
             ->assertSeeText('Luis Mora')
@@ -80,7 +80,7 @@ class AdminPanelTest extends TestCase
 
     public function test_admin_can_log_out(): void
     {
-        $this->actingAs(User::factory()->admin()->create())
+        $this->actingAs(User::factory()->superAdmin()->create())
             ->post(route('admin.logout'))
             ->assertRedirect(route('admin.login'));
 

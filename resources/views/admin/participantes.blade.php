@@ -3,24 +3,7 @@
 @section('title', 'Participantes')
 
 @section('body')
-    <header class="border-b border-white/10 bg-white/5">
-        <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-            <div class="flex items-center gap-3">
-                <span class="text-2xl" aria-hidden="true">🎡</span>
-                <span class="text-lg font-semibold">{{ config('app.name') }} · Administración</span>
-            </div>
-
-            <div class="flex items-center gap-4 text-sm">
-                <span class="hidden text-slate-400 sm:inline">{{ auth()->user()->name }}</span>
-                <form method="POST" action="{{ route('admin.logout') }}">
-                    @csrf
-                    <button type="submit" class="rounded-lg border border-white/15 px-3 py-1.5 text-slate-200 transition hover:bg-white/10">
-                        Cerrar sesión
-                    </button>
-                </form>
-            </div>
-        </div>
-    </header>
+    @include('admin.header', ['activa' => 'participantes'])
 
     <main class="mx-auto max-w-6xl px-6 py-10">
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">

@@ -19,7 +19,7 @@
             La ruleta está girando. Presiona <strong>Detener</strong> cuando la flecha apunte a la opción que quieres elegir.
         </p>
 
-        <div id="ruleta" data-opciones="{{ json_encode($opciones, JSON_UNESCAPED_UNICODE) }}" class="relative mt-8 w-full max-w-sm">
+        <div id="ruleta" data-opciones="{{ json_encode($opciones, JSON_UNESCAPED_UNICODE) }}" data-segundos-por-vuelta="{{ $segundosPorVuelta }}" class="relative mt-8 w-full max-w-sm">
             <svg viewBox="-105 -118 210 223" class="w-full drop-shadow-2xl" role="img" aria-label="Ruleta con {{ count($opciones) }} opciones">
                 <circle r="104" fill="#0f172a" stroke="#fbbf24" stroke-width="3" />
                 <g id="rueda"></g>

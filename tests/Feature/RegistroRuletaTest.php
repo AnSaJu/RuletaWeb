@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\OpcionRuleta;
 use App\Models\Participante;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -24,6 +25,11 @@ class RegistroRuletaTest extends TestCase
         ];
     }
 
+    private function opcionId(int $posicion): int
+    {
+        return OpcionRuleta::ordenadas()->get()[$posicion]->id;
+    }
+
     public function test_the_form_sends_the_participant_to_the_roulette_without_saving_yet(): void
     {
         $this->post(route('participantes.store'), $this->datos())
@@ -43,7 +49,7 @@ class RegistroRuletaTest extends TestCase
     public function test_the_roulette_requires_a_completed_form(): void
     {
         $this->get(route('ruleta.show'))->assertRedirect(route('home'));
-        $this->post(route('ruleta.store'), ['opcion' => 0])->assertRedirect(route('home'));
+        $this->post(route('ruleta.store'), ['opcion' => $this->opcionId(0)])->assertRedirect(route('home'));
 
         $this->assertDatabaseCount('participantes', 0);
     }
@@ -64,7 +70,7 @@ class RegistroRuletaTest extends TestCase
     {
         $this->post(route('participantes.store'), $this->datos());
 
-        $this->post(route('ruleta.store'), ['opcion' => 1])
+        $this->post(route('ruleta.store'), ['opcion' => $this->opcionId(1)])
             ->assertRedirect(route('home'))
             ->assertSessionHas('registrado');
 
@@ -81,7 +87,7 @@ class RegistroRuletaTest extends TestCase
     {
         $this->post(route('participantes.store'), $this->datos());
 
-        $this->post(route('ruleta.store'), ['opcion' => 7])->assertSessionHasErrors('opcion');
+        $this->post(route('ruleta.store'), ['opcion' => 9999])->assertSessionHasErrors('opcion');
         $this->post(route('ruleta.store'), [])->assertSessionHasErrors('opcion');
 
         $this->assertDatabaseCount('participantes', 0);
@@ -90,9 +96,9 @@ class RegistroRuletaTest extends TestCase
     public function test_a_participant_cannot_spin_twice_with_the_same_form(): void
     {
         $this->post(route('participantes.store'), $this->datos());
-        $this->post(route('ruleta.store'), ['opcion' => 0]);
+        $this->post(route('ruleta.store'), ['opcion' => $this->opcionId(0)]);
 
-        $this->post(route('ruleta.store'), ['opcion' => 2])->assertRedirect(route('home'));
+        $this->post(route('ruleta.store'), ['opcion' => $this->opcionId(2)])->assertRedirect(route('home'));
 
         $this->assertDatabaseCount('participantes', 1);
         $this->assertDatabaseHas('participantes', ['opcion' => 'Opción 1']);
@@ -103,7 +109,7 @@ class RegistroRuletaTest extends TestCase
         $this->post(route('participantes.store'), $this->datos());
         Participante::factory()->create(['cedula' => '1020304050']);
 
-        $this->post(route('ruleta.store'), ['opcion' => 0])
+        $this->post(route('ruleta.store'), ['opcion' => $this->opcionId(0)])
             ->assertRedirect(route('home'))
             ->assertSessionHasErrors('cedula');
 

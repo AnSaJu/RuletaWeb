@@ -22,7 +22,7 @@ class ParticipanteFactory extends Factory
             'cedula' => (string) fake()->unique()->numberBetween(100000, 9999999999),
             'direccion' => fake()->streetAddress(),
             'celular' => '3'.fake()->numerify('#########'),
-            'opcion' => fake()->randomElement(array_column(config('ruleta.opciones'), 'nombre')),
+            'opcion' => fake()->randomElement(['Opción 1', 'Opción 2', 'Opción 3']),
         ];
     }
 }

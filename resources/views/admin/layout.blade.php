@@ -7,6 +7,7 @@
     <title>@yield('title') · {{ config('app.name') }}</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('head')
 </head>
 <body class="min-h-screen bg-slate-950 font-sans text-slate-100 antialiased">
     @yield('body')

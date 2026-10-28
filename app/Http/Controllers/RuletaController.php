@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Ajuste;
+use App\Models\OpcionRuleta;
 use App\Models\Participante;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\RedirectResponse;
@@ -22,9 +24,12 @@ class RuletaController extends Controller
             return redirect()->route('home');
         }
 
+        $opciones = OpcionRuleta::ordenadas()->get(['id', 'nombre', 'color', 'tamano']);
+
         return view('ruleta', [
             'nombre' => $pendiente['nombre'],
-            'opciones' => config('ruleta.opciones'),
+            'opciones' => $opciones,
+            'segundosPorVuelta' => Ajuste::segundosPorVuelta(),
         ]);
     }
 
@@ -39,15 +44,13 @@ class RuletaController extends Controller
             return redirect()->route('home');
         }
 
-        $opciones = config('ruleta.opciones');
-
         $datos = $request->validate([
-            'opcion' => ['required', 'integer', Rule::in(array_keys($opciones))],
+            'opcion' => ['required', 'integer', Rule::exists('opciones_ruleta', 'id')],
         ], [
             'opcion.*' => 'No pudimos leer la opción elegida. Intenta de nuevo.',
         ]);
 
-        $opcion = $opciones[(int) $datos['opcion']]['nombre'];
+        $opcion = OpcionRuleta::findOrFail($datos['opcion'])->nombre;
 
         try {
             Participante::create([...$pendiente, 'opcion' => $opcion]);

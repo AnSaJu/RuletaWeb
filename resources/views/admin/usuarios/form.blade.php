@@ -1,16 +1,17 @@
-@extends('admin.layout')
+@extends('admin.panel')
 
 @section('title', $usuario ? 'Editar usuario' : 'Nuevo usuario')
 
-@section('body')
-    @include('admin.header', ['activa' => 'usuarios'])
+@section('activa', 'usuarios')
+
+@section('contenido')
 
     @php
         $campo = 'mt-1 block w-full rounded-xl border bg-slate-900/70 px-4 py-2.5 text-slate-100 outline-none transition focus:ring-2 focus:ring-fuchsia-400';
         $rolActual = old('rol', $usuario?->rol?->value);
     @endphp
 
-    <main class="mx-auto max-w-2xl px-6 py-10">
+    <div class="max-w-2xl">
         <a href="{{ route('admin.usuarios.index') }}" class="text-sm text-slate-400 transition hover:text-slate-200">← Volver a usuarios</a>
 
         <h1 class="mt-3 text-3xl font-bold tracking-tight">{{ $usuario ? 'Editar usuario' : 'Nuevo usuario' }}</h1>
@@ -81,5 +82,5 @@
                 </a>
             </div>
         </form>
-    </main>
+    </div>
 @endsection

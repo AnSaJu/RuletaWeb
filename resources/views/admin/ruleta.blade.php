@@ -1,4 +1,4 @@
-@extends('admin.layout')
+@extends('admin.panel')
 
 @section('title', 'Configurar ruleta')
 
@@ -6,14 +6,15 @@
     @vite('resources/js/admin-ruleta.js')
 @endpush
 
-@section('body')
-    @include('admin.header', ['activa' => 'ruleta'])
+@section('activa', 'ruleta')
+
+@section('contenido')
 
     @php
         $campo = 'mt-1 block w-full rounded-xl border bg-slate-900/70 px-4 py-2.5 text-slate-100 outline-none transition focus:ring-2 focus:ring-fuchsia-400';
     @endphp
 
-    <main class="mx-auto max-w-6xl px-6 py-10">
+    <div>
         <h1 class="text-3xl font-bold tracking-tight">Configurar la ruleta</h1>
         <p class="mt-1 text-slate-400">Los cambios se aplican a los próximos participantes.</p>
 
@@ -118,5 +119,5 @@
                 </div>
             </aside>
         </form>
-    </main>
+    </div>
 @endsection

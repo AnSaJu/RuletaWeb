@@ -62,7 +62,7 @@ class UsuariosTest extends TestCase
     {
         foreach ([User::factory()->superAdmin()->create(), User::factory()->administrador()->create()] as $usuario) {
             $this->post(route('admin.login'), ['email' => $usuario->email, 'password' => 'password'])
-                ->assertRedirect(route('admin.participantes.index'));
+                ->assertRedirect(route('admin.dashboard'));
 
             $this->assertAuthenticatedAs($usuario);
 
@@ -101,7 +101,7 @@ class UsuariosTest extends TestCase
 
         $this->post(route('admin.logout'));
         $this->post(route('admin.login'), ['email' => 'marta@example.com', 'password' => 'clave-segura-1'])
-            ->assertRedirect(route('admin.participantes.index'));
+            ->assertRedirect(route('admin.dashboard'));
         $this->assertAuthenticatedAs($marta);
     }
 

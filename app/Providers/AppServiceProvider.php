@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Support\LandingPage;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,7 +29,12 @@ class AppServiceProvider extends ServiceProvider
             'edit' => 'editar',
         ]);
 
-        // Ruleta y usuarios del panel: solo el super administrador.
+        // Textos y colores configurables para las paginas publicas.
+        View::composer(['landing', 'ruleta'], function ($view) {
+            $view->with('lp', LandingPage::valores());
+        });
+
+        // Ruleta, landing y usuarios del panel: solo el super administrador.
         Gate::define('administrar', fn (User $user) => $user->esSuperAdmin());
     }
 }

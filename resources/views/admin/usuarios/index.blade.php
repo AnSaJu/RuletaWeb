@@ -1,11 +1,12 @@
-@extends('admin.layout')
+@extends('admin.panel')
 
 @section('title', 'Usuarios')
 
-@section('body')
-    @include('admin.header', ['activa' => 'usuarios'])
+@section('activa', 'usuarios')
 
-    <main class="mx-auto max-w-6xl px-6 py-10">
+@section('contenido')
+
+    <div>
         <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
                 <h1 class="text-3xl font-bold tracking-tight">Usuarios del panel</h1>
@@ -84,5 +85,5 @@
                 </tbody>
             </table>
         </div>
-    </main>
+    </div>
 @endsection

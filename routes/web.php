@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\LandingController;
 use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\Admin\ParticipanteController as AdminParticipanteController;
 use App\Http\Controllers\Admin\RuletaController as AdminRuletaController;
@@ -22,17 +24,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     Route::middleware(['auth', EnsureUserIsAdmin::class])->group(function () {
-        Route::get('/', fn () => redirect()->route('admin.participantes.index'))->name('dashboard');
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('participantes', [AdminParticipanteController::class, 'index'])->name('participantes.index');
+        Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
 
         // Solo el super administrador.
         Route::middleware('can:administrar')->group(function () {
             Route::get('ruleta', [AdminRuletaController::class, 'edit'])->name('ruleta.edit');
             Route::put('ruleta', [AdminRuletaController::class, 'update'])->name('ruleta.update');
+
+            Route::get('landing', [LandingController::class, 'edit'])->name('landing.edit');
+            Route::put('landing', [LandingController::class, 'update'])->name('landing.update');
+            Route::delete('landing', [LandingController::class, 'destroy'])->name('landing.destroy');
+
             Route::resource('usuarios', UsuarioController::class)
                 ->parameters(['usuarios' => 'usuario'])
                 ->except('show');
         });
-        Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
     });
 });

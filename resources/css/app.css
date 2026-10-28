@@ -7,3 +7,87 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/*
+ * Tema de las paginas publicas (landing y ruleta).
+ *
+ * Los colores vienen de las variables --lp-* que define el panel de
+ * administracion (partials/tema.blade.php). Todo lo demas se deriva de
+ * ellas, asi que cualquier combinacion de colores se ve coherente.
+ */
+.tema {
+    background-color: var(--lp-fondo);
+    color: var(--lp-texto);
+}
+
+.tema-tarjeta {
+    background-color: color-mix(in srgb, var(--lp-texto) 6%, transparent);
+    border: 1px solid color-mix(in srgb, var(--lp-texto) 14%, transparent);
+}
+
+.tema-suave {
+    color: color-mix(in srgb, var(--lp-texto) 70%, transparent);
+}
+
+.tema-campo {
+    background-color: color-mix(in srgb, var(--lp-fondo) 70%, var(--lp-texto) 4%);
+    border: 1px solid color-mix(in srgb, var(--lp-texto) 18%, transparent);
+    color: var(--lp-texto);
+}
+
+.tema-campo::placeholder {
+    color: color-mix(in srgb, var(--lp-texto) 45%, transparent);
+}
+
+.tema-campo:focus {
+    outline: 2px solid var(--lp-acento-2);
+    outline-offset: 0;
+}
+
+.tema-campo[aria-invalid='true'] {
+    border-color: #f43f5e;
+}
+
+.tema-degradado {
+    background-image: linear-gradient(to right, var(--lp-acento-1), var(--lp-acento-2));
+}
+
+.tema-boton {
+    background-image: linear-gradient(to right, var(--lp-acento-1), var(--lp-acento-2));
+    color: var(--lp-texto-boton);
+}
+
+.tema-boton:hover {
+    filter: brightness(1.1);
+}
+
+.tema-boton:focus-visible {
+    outline: 2px solid var(--lp-acento-1);
+    outline-offset: 2px;
+}
+
+.tema-texto-degradado {
+    background-image: linear-gradient(to right, var(--lp-acento-1), var(--lp-acento-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.tema-brillo-1 {
+    background-color: color-mix(in srgb, var(--lp-acento-2) 30%, transparent);
+}
+
+.tema-brillo-2 {
+    background-color: color-mix(in srgb, var(--lp-acento-1) 20%, transparent);
+}
+
+.tema-insignia {
+    color: var(--lp-acento-1);
+    background-color: color-mix(in srgb, var(--lp-acento-1) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--lp-acento-1) 40%, transparent);
+}
+
+.tema-check {
+    color: var(--lp-acento-1);
+    background-color: color-mix(in srgb, var(--lp-acento-1) 20%, transparent);
+}

@@ -29,7 +29,7 @@ class AdminPanelTest extends TestCase
         $admin = User::factory()->superAdmin()->create();
 
         $this->post(route('admin.login'), ['email' => $admin->email, 'password' => 'password'])
-            ->assertRedirect(route('admin.participantes.index'));
+            ->assertRedirect(route('admin.dashboard'));
 
         $this->assertAuthenticatedAs($admin);
     }

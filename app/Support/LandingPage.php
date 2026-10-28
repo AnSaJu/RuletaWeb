@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\Ajuste;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Textos y colores de la landing page, editables desde el panel.
@@ -14,6 +15,9 @@ class LandingPage
 {
     public const PREFIJO = 'landing.';
 
+    /** Disco donde se guarda el logo (public/uploads). */
+    public const DISCO = 'uploads';
+
     /**
      * @return array<string, string>
      */
@@ -21,6 +25,8 @@ class LandingPage
     {
         return [
             'meta_titulo' => config('app.name').' · Regístrate y participa',
+            'nombre_principal' => config('app.name'),
+            'logo' => '',
             'insignia' => '🎡 Gira la ruleta y gana',
             'titulo' => 'Regístrate y *participa* en la ruleta',
             'descripcion' => 'Completa el formulario con tus datos y quedarás inscrito para participar. Solo toma un minuto.',
@@ -70,7 +76,24 @@ class LandingPage
 
     public static function restaurar(): void
     {
+        self::borrarLogo(self::valores()['logo']);
+
         Ajuste::query()->where('clave', 'like', self::PREFIJO.'%')->delete();
+    }
+
+    /**
+     * Public URL of the uploaded logo (relative to the current host).
+     */
+    public static function urlLogo(string $ruta): string
+    {
+        return asset('uploads/'.$ruta);
+    }
+
+    public static function borrarLogo(string $ruta): void
+    {
+        if ($ruta !== '') {
+            Storage::disk(self::DISCO)->delete($ruta);
+        }
     }
 
     /**

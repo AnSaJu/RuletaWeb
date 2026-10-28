@@ -47,6 +47,16 @@ return [
             'report' => false,
         ],
 
+        // Archivos subidos desde el panel (logo de la landing). Viven dentro de
+        // public/, asi que no hace falta `storage:link`; se leen con asset().
+        'uploads' => [
+            'driver' => 'local',
+            'root' => public_path('uploads'),
+            'visibility' => 'public',
+            'throw' => false,
+            'report' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

@@ -19,6 +19,21 @@
         <main class="mx-auto grid min-h-screen max-w-6xl items-center gap-12 px-6 py-16 lg:grid-cols-2">
             {{-- Columna de presentación --}}
             <section class="text-center lg:text-left">
+                {{-- Marca: logo y nombre principal --}}
+                @if (filled($lp['logo']) || filled($lp['nombre_principal']))
+                    <div class="mb-8 flex items-center justify-center gap-4 lg:justify-start">
+                        @if (filled($lp['logo']))
+                            <img src="{{ \App\Support\LandingPage::urlLogo($lp['logo']) }}"
+                                 alt="{{ filled($lp['nombre_principal']) ? '' : 'Logo' }}"
+                                 class="h-16 w-auto max-w-[10rem] object-contain sm:h-20">
+                        @endif
+
+                        @if (filled($lp['nombre_principal']))
+                            <p class="text-2xl font-bold tracking-tight sm:text-3xl">{{ $lp['nombre_principal'] }}</p>
+                        @endif
+                    </div>
+                @endif
+
                 @if (filled($lp['insignia']))
                     <span class="tema-insignia inline-flex items-center gap-2 rounded-full px-4 py-1 text-sm font-medium">
                         {{ $lp['insignia'] }}

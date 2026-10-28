@@ -60,6 +60,33 @@ if (formulario) {
         });
     };
 
+    // El logo que se muestra: el archivo recien elegido o, si no hay, el que ya estaba guardado.
+    const logo = previa('logo');
+    const logoGuardado = logo.getAttribute('src') ?? '';
+    let logoNuevo = null;
+
+    const actualizarLogo = () => {
+        const quitar = formulario.elements.quitar_logo?.checked ?? false;
+        const origen = logoNuevo ?? logoGuardado;
+
+        logo.hidden = quitar && ! logoNuevo || origen === '';
+
+        if (origen !== '') {
+            logo.src = origen;
+        }
+    };
+
+    formulario.elements.logo.addEventListener('change', (evento) => {
+        if (logoNuevo) {
+            URL.revokeObjectURL(logoNuevo);
+        }
+
+        const archivo = evento.target.files[0];
+        logoNuevo = archivo ? URL.createObjectURL(archivo) : null;
+        actualizarLogo();
+        previa('marca').hidden = logo.hidden && previa('nombre_principal').hidden;
+    });
+
     const actualizar = () => {
         const [fondo, textoColor, acento1, acento2] = ['color_fondo', 'color_texto', 'color_acento_1', 'color_acento_2'].map(valor);
 
@@ -72,6 +99,10 @@ if (formulario) {
         ['color_fondo', 'color_texto', 'color_acento_1', 'color_acento_2'].forEach((nombre) => {
             formulario.querySelector(`[data-valor="${nombre}"]`).textContent = valor(nombre);
         });
+
+        texto('nombre_principal', valor('nombre_principal'));
+        actualizarLogo();
+        previa('marca').hidden = logo.hidden && previa('nombre_principal').hidden;
 
         texto('insignia', valor('insignia'));
         titulo(valor('titulo'));

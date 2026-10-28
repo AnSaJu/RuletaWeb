@@ -11,6 +11,8 @@ class UpdateLandingRequest extends FormRequest
 {
     public const MAX_BENEFICIOS = 6;
 
+    public const MAX_LOGO_KB = 2048;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -30,6 +32,9 @@ class UpdateLandingRequest extends FormRequest
 
         return [
             'meta_titulo' => ['required', 'string', 'max:80'],
+            'nombre_principal' => ['nullable', 'string', 'max:60'],
+            'logo' => ['nullable', 'file', 'mimes:png,jpg,jpeg,webp', 'max:'.self::MAX_LOGO_KB],
+            'quitar_logo' => ['nullable', 'boolean'],
             'insignia' => ['nullable', 'string', 'max:60'],
             'titulo' => ['required', 'string', 'max:120'],
             'descripcion' => ['nullable', 'string', 'max:300'],
@@ -68,6 +73,10 @@ class UpdateLandingRequest extends FormRequest
         return [
             'meta_titulo.required' => 'Escribe el título de la pestaña del navegador.',
             'meta_titulo.max' => 'El título de la pestaña no puede superar 80 caracteres.',
+            'nombre_principal.max' => 'El nombre principal no puede superar 60 caracteres.',
+            'logo.mimes' => 'El logo debe ser una imagen PNG, JPG o WebP.',
+            'logo.max' => 'El logo no puede pesar más de 2 MB.',
+            'logo.*' => 'No se pudo subir el logo. Prueba con otra imagen PNG, JPG o WebP de máximo 2 MB.',
             'insignia.max' => 'La insignia no puede superar 60 caracteres.',
             'titulo.required' => 'Escribe el título principal.',
             'titulo.max' => 'El título no puede superar 120 caracteres.',

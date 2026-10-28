@@ -5,6 +5,8 @@ namespace Tests\Feature\Admin;
 use App\Models\User;
 use App\Support\LandingPage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class LandingConfigTest extends TestCase
@@ -18,6 +20,7 @@ class LandingConfigTest extends TestCase
     {
         return [
             'meta_titulo' => 'Gran sorteo',
+            'nombre_principal' => 'Gran Sorteo SAS',
             'insignia' => '🎁 Premios todo el mes',
             'titulo' => 'Gana con *nuestra* ruleta',
             'descripcion' => 'Regístrate y gira.',
@@ -82,6 +85,7 @@ class LandingConfigTest extends TestCase
         $this->get(route('home'))
             ->assertOk()
             ->assertSee('<title>Gran sorteo</title>', false)
+            ->assertSeeText('Gran Sorteo SAS')
             ->assertSeeText('🎁 Premios todo el mes')
             ->assertSeeText('Gana con')
             ->assertSee('<span class="tema-texto-degradado">nuestra</span>', false)
@@ -179,6 +183,150 @@ class LandingConfigTest extends TestCase
             ->assertRedirect(route('admin.landing.edit'));
 
         $this->assertSame(LandingPage::predeterminados(), LandingPage::valores());
+    }
+
+    public function test_the_landing_shows_the_main_name_above_the_badge(): void
+    {
+        $html = $this->get(route('home'))->assertOk()->getContent();
+
+        $this->assertLessThan(
+            strpos($html, 'tema-insignia'),
+            strpos($html, 'tracking-tight sm:text-3xl">'.config('app.name')),
+        );
+    }
+
+    public function test_the_brand_block_is_hidden_without_name_and_logo(): void
+    {
+        $this->actingAs($this->superAdmin())
+            ->put(route('admin.landing.update'), $this->datos(['nombre_principal' => null]));
+
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertDontSee('Gran Sorteo SAS')
+            ->assertDontSee('sm:text-3xl', false)
+            ->assertDontSee('max-w-[10rem]', false);
+    }
+
+    public function test_a_logo_can_be_uploaded_and_is_shown_above_the_badge(): void
+    {
+        Storage::fake(LandingPage::DISCO);
+        $admin = $this->superAdmin();
+
+        $this->actingAs($admin)
+            ->put(route('admin.landing.update'), $this->datos(['logo' => UploadedFile::fake()->image('logo.png', 300, 120)]))
+            ->assertSessionHasNoErrors()
+            ->assertRedirect(route('admin.landing.edit'));
+
+        $ruta = LandingPage::valores()['logo'];
+        $this->assertStringStartsWith('logos/', $ruta);
+        Storage::disk(LandingPage::DISCO)->assertExists($ruta);
+
+        $html = $this->get(route('home'))->assertOk()->getContent();
+        $this->assertStringContainsString('uploads/'.$ruta, $html);
+        $this->assertLessThan(strpos($html, 'tema-insignia'), strpos($html, 'uploads/'.$ruta));
+
+        $this->actingAs($admin)->get(route('admin.landing.edit'))
+            ->assertOk()
+            ->assertSee('uploads/'.$ruta);
+    }
+
+    public function test_saving_without_a_file_keeps_the_current_logo(): void
+    {
+        Storage::fake(LandingPage::DISCO);
+        $admin = $this->superAdmin();
+
+        $this->actingAs($admin)->put(route('admin.landing.update'), $this->datos(['logo' => UploadedFile::fake()->image('logo.png')]));
+        $ruta = LandingPage::valores()['logo'];
+
+        $this->actingAs($admin)->put(route('admin.landing.update'), $this->datos(['titulo' => 'Otro título']));
+
+        $this->assertSame($ruta, LandingPage::valores()['logo']);
+        Storage::disk(LandingPage::DISCO)->assertExists($ruta);
+    }
+
+    public function test_a_new_logo_replaces_and_deletes_the_old_one(): void
+    {
+        Storage::fake(LandingPage::DISCO);
+        $admin = $this->superAdmin();
+
+        $this->actingAs($admin)->put(route('admin.landing.update'), $this->datos(['logo' => UploadedFile::fake()->image('uno.png')]));
+        $anterior = LandingPage::valores()['logo'];
+
+        $this->actingAs($admin)->put(route('admin.landing.update'), $this->datos(['logo' => UploadedFile::fake()->image('dos.jpg')]));
+        $nuevo = LandingPage::valores()['logo'];
+
+        $this->assertNotSame($anterior, $nuevo);
+        Storage::disk(LandingPage::DISCO)->assertMissing($anterior);
+        Storage::disk(LandingPage::DISCO)->assertExists($nuevo);
+    }
+
+    public function test_the_logo_can_be_removed(): void
+    {
+        Storage::fake(LandingPage::DISCO);
+        $admin = $this->superAdmin();
+
+        $this->actingAs($admin)->put(route('admin.landing.update'), $this->datos(['logo' => UploadedFile::fake()->image('logo.png')]));
+        $ruta = LandingPage::valores()['logo'];
+
+        $this->actingAs($admin)->put(route('admin.landing.update'), $this->datos(['quitar_logo' => '1']))
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('', LandingPage::valores()['logo']);
+        Storage::disk(LandingPage::DISCO)->assertMissing($ruta);
+        $this->get(route('home'))->assertDontSee('max-w-[10rem]', false);
+    }
+
+    public function test_only_png_jpg_and_webp_images_up_to_two_megabytes_are_accepted(): void
+    {
+        Storage::fake(LandingPage::DISCO);
+        $admin = $this->superAdmin();
+
+        foreach ([
+            UploadedFile::fake()->create('logo.svg', 5, 'image/svg+xml'),
+            UploadedFile::fake()->create('logo.pdf', 5, 'application/pdf'),
+            UploadedFile::fake()->create('logo.php', 5, 'application/x-php'),
+            UploadedFile::fake()->image('enorme.png')->size(3000),
+        ] as $archivo) {
+            $this->actingAs($admin)
+                ->put(route('admin.landing.update'), $this->datos(['logo' => $archivo]))
+                ->assertSessionHasErrors('logo');
+        }
+
+        $this->assertSame('', LandingPage::valores()['logo']);
+        $this->assertSame([], Storage::disk(LandingPage::DISCO)->allFiles());
+    }
+
+    public function test_restoring_the_original_design_deletes_the_logo_file(): void
+    {
+        Storage::fake(LandingPage::DISCO);
+        $admin = $this->superAdmin();
+
+        $this->actingAs($admin)->put(route('admin.landing.update'), $this->datos(['logo' => UploadedFile::fake()->image('logo.png')]));
+        $ruta = LandingPage::valores()['logo'];
+
+        $this->actingAs($admin)->delete(route('admin.landing.destroy'));
+
+        Storage::disk(LandingPage::DISCO)->assertMissing($ruta);
+        $this->assertSame('', LandingPage::valores()['logo']);
+    }
+
+    public function test_only_the_super_admin_can_upload_a_logo(): void
+    {
+        Storage::fake(LandingPage::DISCO);
+
+        $this->actingAs(User::factory()->administrador()->create())
+            ->put(route('admin.landing.update'), $this->datos(['logo' => UploadedFile::fake()->image('logo.png')]))
+            ->assertForbidden();
+
+        $this->assertSame([], Storage::disk(LandingPage::DISCO)->allFiles());
+    }
+
+    public function test_line_breaks_from_the_browser_are_stored_as_lf(): void
+    {
+        $this->actingAs($this->superAdmin())
+            ->put(route('admin.landing.update'), $this->datos(['beneficios' => "Uno\r\nDos"]));
+
+        $this->assertSame("Uno\nDos", LandingPage::valores()['beneficios']);
     }
 
     public function test_the_title_segments_mark_the_highlighted_words(): void

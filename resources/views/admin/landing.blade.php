@@ -38,12 +38,47 @@
         </div>
     @endif
 
-    <form id="form-landing" method="POST" action="{{ route('admin.landing.update') }}" novalidate
+    <form id="form-landing" method="POST" action="{{ route('admin.landing.update') }}" novalidate enctype="multipart/form-data"
           class="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_24rem]">
         @csrf
         @method('PUT')
 
         <div class="space-y-8">
+            {{-- Marca --}}
+            <section class="rounded-2xl border border-white/10 bg-white/5 p-6">
+                <h2 class="text-lg font-semibold">Marca</h2>
+                <p class="mt-1 text-sm text-slate-400">Aparecen arriba de todo en la landing page.</p>
+
+                <div class="mt-4 space-y-5">
+                    <div>
+                        <label for="nombre_principal" class="text-sm font-medium text-slate-200">Nombre principal <span class="text-slate-500">(opcional)</span></label>
+                        <input id="nombre_principal" name="nombre_principal" type="text" maxlength="60" value="{{ $v('nombre_principal') }}" class="{{ $campo }} {{ $borde('nombre_principal') }}">
+                        @error('nombre_principal')<p class="mt-1 text-sm text-rose-400">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div>
+                        <label for="logo" class="text-sm font-medium text-slate-200">Logo <span class="text-slate-500">(opcional)</span></label>
+
+                        @if (filled($valores['logo']))
+                            <div class="mt-2 flex items-center gap-4 rounded-xl border border-white/10 bg-slate-900/40 p-3">
+                                <img src="{{ \App\Support\LandingPage::urlLogo($valores['logo']) }}" alt="Logo actual" class="h-14 w-auto max-w-[8rem] rounded object-contain">
+                                <label class="flex cursor-pointer items-center gap-2 text-sm text-slate-300">
+                                    <input type="checkbox" id="quitar_logo" name="quitar_logo" value="1" @checked(old('quitar_logo')) class="h-4 w-4 rounded border-white/20 bg-slate-900">
+                                    Quitar el logo
+                                </label>
+                            </div>
+                        @endif
+
+                        <input id="logo" name="logo" type="file" accept="image/png,image/jpeg,image/webp"
+                               class="mt-2 block w-full cursor-pointer rounded-xl border bg-slate-900/70 text-sm text-slate-300 file:mr-4 file:cursor-pointer file:border-0 file:bg-fuchsia-500/20 file:px-4 file:py-2.5 file:text-fuchsia-200 {{ $borde('logo') }}">
+                        <p class="mt-1 text-xs text-slate-500">
+                            {{ filled($valores['logo']) ? 'Elige un archivo para reemplazar el logo actual. ' : '' }}PNG, JPG o WebP, máximo {{ $maxLogoMb }} MB. Un fondo transparente (PNG) se ve mejor.
+                        </p>
+                        @error('logo')<p class="mt-1 text-sm text-rose-400">{{ $message }}</p>@enderror
+                    </div>
+                </div>
+            </section>
+
             {{-- Textos --}}
             <section class="rounded-2xl border border-white/10 bg-white/5 p-6">
                 <h2 class="text-lg font-semibold">Textos principales</h2>
@@ -151,6 +186,12 @@
                     <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
                         <div class="tema-brillo-1 absolute -top-20 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full blur-3xl"></div>
                         <div class="tema-brillo-2 absolute -bottom-20 -right-10 h-48 w-48 rounded-full blur-3xl"></div>
+                    </div>
+
+                    <div data-previa="marca" class="mb-4 flex items-center gap-3">
+                        <img data-previa="logo" alt="" src="{{ filled($valores['logo']) ? \App\Support\LandingPage::urlLogo($valores['logo']) : '' }}"
+                             class="h-10 w-auto max-w-[6rem] object-contain" @if (blank($valores['logo'])) hidden @endif>
+                        <p data-previa="nombre_principal" class="text-lg font-bold tracking-tight"></p>
                     </div>
 
                     <span data-previa="insignia" class="tema-insignia inline-flex rounded-full px-3 py-0.5 text-xs font-medium"></span>
